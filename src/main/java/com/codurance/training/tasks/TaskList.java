@@ -44,9 +44,9 @@ public final class TaskList {
         for (Map.Entry<String, List<com.codurance.training.tasks.Task>> project : tasks.entrySet()) {
             writer.write(project.getKey());
             writer.write("\n");
-            for (com.codurance.training.tasks.Task task : project.getValue()) {
-                writer.write(String.format("[%c] %d: %s%n", (task.isDone() ? 'x' : ' '), task.getId(), task.getDescription()));
-            }
+            Tasks task = new Tasks();
+            task.addAll(project.getValue());
+            task.formatTasks(writer);
         }
     }
 
