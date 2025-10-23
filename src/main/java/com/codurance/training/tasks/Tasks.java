@@ -9,7 +9,11 @@ import java.util.Map;
 public class Tasks extends ArrayList<Task> {
     void formatTasks(Writer writer) throws IOException {
         for (Task task : this) {
-            writer.write(String.format("[%c] %d: %s%n", (task.isDone() ? 'x' : ' '), task.getId(), task.getDescription()));
+            writer.write(getFormat(task));
         }
+    }
+
+    private static String getFormat(Task task) {
+        return String.format("[%c] %d: %s%n", (task.isDone() ? 'x' : ' '), task.getId(), task.getDescription());
     }
 }
