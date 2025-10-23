@@ -17,7 +17,7 @@ public class AddCommand implements Command{
             projects.put(subcommandRest[1], new ArrayList<>());
         } else if (subcommand.equals("task")) {
             String[] projectTask = subcommandRest[1].split(" ", 2);
-            projects.addTasks(projectTask[0], projectTask[1]);
+            projects.addTasksToProject(projectTask[0], projectTask[1]);
         } else {
             throw new IllegalArgumentException("Unknown add subcommand: " + subcommand);
         }

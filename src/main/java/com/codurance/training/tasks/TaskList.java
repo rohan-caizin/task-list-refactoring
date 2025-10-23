@@ -10,7 +10,7 @@ import java.util.Map;
 
 public final class TaskList {
 
-    private final Projects projects = new Projects();
+    private final Projects projects;
     private final Writer writer;
     private final Map<String, Command> commands = new HashMap<>();
 
@@ -21,10 +21,12 @@ public final class TaskList {
         commands.put("uncheck", new CheckCommand(projects, false));
     }
     public TaskList(Writer writer) {
+
         this.writer = writer;
+        IdGenerator idGenerator = new IdGenerator();
+        this.projects = new Projects(idGenerator);
         registerCommands();
     }
-
     public void execute(String commandLine) throws Exception {
         String[] parts = commandLine.split(" ", 2);
         String commandName = parts[0];

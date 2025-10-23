@@ -7,18 +7,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Projects extends LinkedHashMap<String,List<Task>> {
-    private int lastId = 1;
-
-    int nextId() {
-        return lastId++;
+//    private int lastId = 1;
+//
+//    int nextId() {
+//        return lastId++;
+//    }
+    private final IdGenerator idGenerator;
+    public Projects(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
     }
 
-    void addTasks(String project, String description) {
+    void addTasksToProject(String project, String description) {
         List<Task> projectTasks = this.get(project);
         if (projectTasks == null) {
             throw new IllegalArgumentException("Unknown project: " + project);
         }
-        projectTasks.add(new Task(nextId(), description, false));
+        projectTasks.add(new Task(idGenerator.nextId(), description, false));
     }
 
     void formatProject(Writer writer) throws IOException {
