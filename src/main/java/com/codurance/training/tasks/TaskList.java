@@ -3,7 +3,6 @@ package com.codurance.training.tasks;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ public final class TaskList {
 
     private final Projects projects = new Projects();
     private final Writer writer;
-    private long lastId = 0;
 
     public TaskList(Writer writer) {
         this.writer = writer;
@@ -60,11 +58,7 @@ public final class TaskList {
     }
 
     private void addTask(String project, String description) {
-        List<com.codurance.training.tasks.Task> projectTasks = projects.get(project);
-        if (projectTasks == null) {
-            throw new IllegalArgumentException("Unknown project: " + project);
-        }
-        projectTasks.add(new com.codurance.training.tasks.Task(nextId(), description, false));
+        projects.addTasks(project, description);
     }
 
     private void check(String idString) {
@@ -89,7 +83,4 @@ public final class TaskList {
         out.println();
     }
 
-    private long nextId() {
-        return ++lastId;
-    }
 }
