@@ -3,6 +3,7 @@ package com.codurance.training.tasks;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,75 +13,30 @@ public final class TaskList {
 
     private final Projects projects = new Projects();
     private final Writer writer;
+    private final Map<String, Command> commands = new HashMap<>();
 
+    private void registerCommands() {
+        commands.put("show", new ShowCommand(projects, writer));
+        commands.put("add", new AddCommand(projects));
+        commands.put("check", new CheckCommand(projects, true));
+        commands.put("uncheck", new CheckCommand(projects, false));
+    }
     public TaskList(Writer writer) {
         this.writer = writer;
+        registerCommands();
     }
 
     public void execute(String commandLine) throws Exception {
-        String[] commandRest = commandLine.split(" ", 2);
-        String command = commandRest[0];
-        switch (command) {
-            case "show":
-                show();
-                break;
-            case "add":
-                add(commandRest[1]);
-                break;
-            case "check":
-                check(commandRest[1]);
-                break;
-            case "uncheck":
-                uncheck(commandRest[1]);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown command: " + command);
+        String[] parts = commandLine.split(" ", 2);
+        String commandName = parts[0];
+        String arguments = parts.length > 1 ? parts[1] : "";
+
+        Command command = commands.get(commandName);
+        if (command == null) {
+            throw new IllegalArgumentException("Unknown command: " + commandName);
         }
-    }
 
-    private void show() throws IOException {
-        projects.formatProject(writer);
-    }
-
-    private void add(String commandLine) {
-        String[] subcommandRest = commandLine.split(" ", 2);
-        String subcommand = subcommandRest[0];
-        if (subcommand.equals("project")) {
-            addProject(subcommandRest[1]);
-        } else if (subcommand.equals("task")) {
-            String[] projectTask = subcommandRest[1].split(" ", 2);
-            addTask(projectTask[0], projectTask[1]);
-        }
-    }
-
-    private void addProject(String name) {
-        projects.put(name, new ArrayList<>());
-    }
-
-    private void addTask(String project, String description) {
-        projects.addTasks(project, description);
-    }
-
-    private void check(String idString) {
-        setDone(idString, true);
-    }
-
-    private void uncheck(String idString) {
-        setDone(idString, false);
-    }
-
-    private void setDone(String idString, boolean done) {
-        int id = Integer.parseInt(idString);
-        for (Map.Entry<String, List<com.codurance.training.tasks.Task>> project : projects.entrySet()) {
-            for (com.codurance.training.tasks.Task task : project.getValue()) {
-                if (task.getId() == id) {
-                    task.setDone(done);
-                    return;
-                }
-            }
-        }
-        out.printf("Could not find a task with an ID of %d.", id);
-        out.println();
+        command.execute(arguments);
     }
 
 }
